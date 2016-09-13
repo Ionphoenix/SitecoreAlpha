@@ -1,0 +1,65 @@
+﻿
+
+@using (Html.BeginForm())
+{
+        <p>Member Search View</p>
+
+        <div class="row">
+
+            <div class="col-md-2">Last Name:</div>
+            <div class="col-md-10">@Html.TextBox("LastName",null,new {@id="name",@class = "form-control",@placeholder="Enter Last Name here"})</div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-2">Phone Area Code(USA Only):</div>
+            <div class="col-md-10"></div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-2">City, State, Zip</div>
+            <div class="col-md-10"></div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-2">Country:</div>
+            <div class="col-md-10"></div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-2">Specialty</div>
+            <div class="col-md-10"></div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-2">Language</div>
+            <div class="col-md-10"></div>
+        </div>
+        <div class="row">
+            
+            <input type="submit" name="Submit" value="Submit" />
+        </div>
+    }
+
+    <div class="row">
+            <div id="resultArea"></div>
+    </div>
+
+
+<script>
+    $(function () {
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        $('#resultArea').html(result);
+                    }
+                });
+            }
+            return false;
+        });
+    });
+
+</script>

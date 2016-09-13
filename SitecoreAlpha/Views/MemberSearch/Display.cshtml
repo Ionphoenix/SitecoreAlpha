@@ -1,0 +1,184 @@
+﻿@model PagedList.IPagedList<SitecoreAlpha.Models.MemberInfo>
+@using PagedList
+@using PagedList.Mvc
+
+
+
+
+    @using (Html.BeginRouteForm(Sitecore.Mvc.Configuration.MvcSettings.SitecoreRouteName, FormMethod.Get))
+    {
+        @Html.Sitecore().FormHandler()
+     @*@using (Html.BeginForm("Display", "MemberSearch", FormMethod.Get)) {*@ 
+    <p>
+        Last Name:@Html.TextBox("Lname", ViewBag.lname as string, new {@class = "form-control", @placeholder = "Last Name", style = "width:300px"})
+        <br/>
+        Phone Area Code(USA only): @Html.TextBox("areacode", ViewBag.area as string, new {@class = "form-control", @placeholder = "Area Code", style = "width:300px"})
+        <br/>
+        City, State Zip:
+        <div class="row">
+            <div class="col-md-12">
+        @Html.TextBox("city", ViewBag.citycode as string, new {@class = "form-control", @placeholder = "City", style = "width:300px"}),
+        @Html.TextBox("statecd", ViewBag.state as string, new {@class = "form-control", @placeholder = "State", style = "width:300px"})
+        @Html.TextBox("zip", ViewBag.zip as string, new {@class = "form-control", @placeholder = "Zip Code", style = "width:300px"})
+                
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        Country:<br/>
+        @Html.DropDownList("country", new SelectList(ViewBag.Country, ViewBag.selcountry as string), new {@class = "form-control"})
+        <br/>
+        Specialty:<br/>
+        @Html.DropDownList("spec", new SelectList(ViewBag.Specialty, ViewBag.spec), new {@class = "form-control"})
+        <br/>
+        Language:<br/>
+        @Html.DropDownList("language", new SelectList(ViewBag.Language, ViewBag.langtest as string), new {@class = "form-control"})
+        <br/>
+
+        <input id="Button1" type="submit" value="Search"/>
+    </p>
+
+
+    }
+    @*pre loading*@
+    <div class="row">
+        <div class="col-md-offset-5 col-md-5">
+
+            <div id="ajaxBusy" style="display: none; position: absolute; z-index: 999;">
+                <div style="background-color: white; text-align: center; padding: 20px; border: 1px solid #708090">
+                    <span>
+                            loading please wait.......
+                    </span>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="panel-group">
+        @foreach (var item in Model)
+        {
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>
+                                    
+                                <a data-toggle="collapse" href="@("#" + item.Cust_ID)">@item.Display_Nm</a>
+                                </h6>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>
+
+                                    @item.cityname , @item.state_cd
+                                </h6>
+                            </div>
+                            <div class="col-md-3">
+                                 <h6>
+                                    @item.certtext
+
+                                </h6>
+                            </div>
+                        </div>
+                    </h4>
+                </div>
+                <div id="@item.Cust_ID" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <div>Telephone:@item.phonenum</div>
+                        <div><strong>Address:</strong>
+                        </div>
+                        <div>@item.StreetAddress1</div>
+                        <div>@item.StreetAddress2</div>
+                        <div>@item.cityname , @item.state_cd </div>
+                        <div><strong>Certification:</strong>@item.certtext</div>
+                        <div><strong>Subspeciality Interest(s):</strong> @item.specialtydesc</div>
+                    </div>
+                    @*<div class="panel-footer">Panel Footer</div>*@
+                </div>
+            </div>
+                    @*<tr>
+                            <td>
+                                @Html.ActionLink(@item.Display_Nm, "ViewMember", new {id = item.Cust_ID})
+                            </td>
+                            <td>
+                                @item.cityname
+                            </td>
+                            <td>
+                                @item.certtext
+                            </td>
+                        </tr>*@
+        }
+    </div>
+
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page =>  Url.Action("Display",
+        new {page, sortorder = ViewBag.CurrentSort, filteroption = ViewBag.CurrentFilter}))
+
+
+
+
+
+
+
+    <div id="toUpdate"></div>
+
+
+
+
+
+    <script type="text/javascript">
+     $(document).ajaxStart(function () {
+         $('#ajaxBusy').show();
+     });
+
+     $(document).ajaxStop(function () {
+         $('#ajaxBusy').hide();
+     });
+
+     $(function() {
+
+         $("#Button1")
+             .click(function() {
+                 $.ajax({
+                     type: "POST",
+                     url: "/MemberSearch/AjaxLoader",
+                     data: "",
+                     success: function(responseTest) {
+                        // alert(responseTest);
+                     }
+                 });
+
+             });
+
+     });
+
+     $(document)
+         .ready(function() {
+             console.log($(".pagination > a").text());
+             $(".pagination > li > a")
+                 .each(function() {
+                    // console.log($(this).attr("href"));
+                   
+                     if ($(this).attr("href") != null) {
+                         
+                         var newhref = $(this).attr("href");
+                         var test = newhref.replace("api/sitecore/MemberSearch/Display", "SitecoreAlpha");
+                         $(this).attr("href", test);
+                     }
+
+                 });
+
+         });
+     
+    </script>
+
+
+
+
+

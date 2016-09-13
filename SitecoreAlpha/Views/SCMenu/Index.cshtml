@@ -1,0 +1,12 @@
+﻿@model Sitecore.Collections.ChildList
+
+<ul>
+    
+    @foreach (var child in @Model.InnerChildren)
+    {
+        <li>
+            @child.Name
+        </li>
+    }
+
+</ul>
